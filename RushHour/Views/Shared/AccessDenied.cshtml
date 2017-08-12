@@ -1,0 +1,8 @@
+﻿@using RushHour.Helpers
+@{
+    ViewBag.Title = "Access Denied";
+    string path = Path.Combine(Constants.ImagesToolsDirectory, "access-denied.jpg");
+}
+
+<h2>Access Denied</h2>
+<img src="@Url.Content(path)" alt="Access Denied" style="width:50%;height:50%" />

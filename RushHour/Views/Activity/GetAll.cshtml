@@ -1,0 +1,51 @@
+﻿@using RushHour.ViewModels
+@model IEnumerable<ActivityViewModel>
+
+@{
+    ViewBag.Title = "View all activities";
+}
+
+<h2>View all activities</h2>
+
+@Html.ActionLink("Create an activity", "Create", "Activity")<br />
+<script>
+    $(document).ready(function () {
+        $('.table').DataTable();
+    });
+</script>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Duration)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+
+    @foreach (ActivityViewModel item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Duration)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", "Activity", new { id = item.Id }, null)
+            </td>
+        </tr>
+    }
+
+</table>

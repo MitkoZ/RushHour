@@ -1,0 +1,232 @@
+﻿@model RushHour.ViewModels.AppointmentViewModel
+@using DataAccess.Models
+@using RushHour.Helpers
+@{
+    ViewBag.Title = "Create an Appointment";
+}
+<script>
+    $(document).ready(function () {
+        ShowTotalPrice()
+    })      //Executed when page renders (for edit/view appointment action)
+
+    $(document).ready(function () {
+        $('input[type = "checkbox"]').change(function () {
+            ShowTotalPrice()
+        })
+    }) //Executed when an input type checkbox is pressed
+
+    function ShowTotalPrice() {
+        var checkedActivitiesIds = [];
+        $('input[type=checkbox]:checked').each(function () {
+            var checkboxValue = (this.checked ? $(this).val() : "");
+            checkedActivitiesIds.push(checkboxValue);
+        });
+        var chosenActivitiesPrices = [];
+        for (var i = 0; i < checkedActivitiesIds.length; i++) {
+            chosenActivitiesPrices.push(parseFloat($("#activity-price-" + checkedActivitiesIds[i]).text()));
+        }
+
+        var totalPrice = 0;
+        for (var i = 0; i < chosenActivitiesPrices.length; i++) {
+            totalPrice += chosenActivitiesPrices[i];
+        }
+        $("#TotalPrice").text(totalPrice);
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            $("#datetimepicker1").on("dp.change", function () {
+                CalculateEndDateTime();
+            }) }, 300);
+      
+    }) //Executed when the start date time is pressed
+
+    $(document).ready(function () {
+        $('input[type = "checkbox"]').change(function () {
+            CalculateEndDateTime();
+        })
+    }) //Executed when an input type checkbox is pressed
+
+
+    function CalculateEndDateTime() {
+       
+        var checkedActivitiesIds = [];
+        $('input[type=checkbox]:checked').each(function () {
+            var checkboxValue = (this.checked ? $(this).val() : "");
+            checkedActivitiesIds.push(checkboxValue);
+        });
+        var chosenActivitiesDuration = [];
+        for (var i = 0; i < checkedActivitiesIds.length; i++) {
+            chosenActivitiesDuration.push(parseFloat($("#activity-duration-" + checkedActivitiesIds[i]).text()));
+        }
+        var StartDateTime = moment($("#StartDateTime").val(), "DD/MM/YYYY HH:mm");
+        var StartDateTimeMilliseconds = moment(StartDateTime).valueOf();
+        var EndDateTimeMilliseconds = 0;
+        for (var i = 0; i < chosenActivitiesDuration.length; i++) {
+            EndDateTimeMilliseconds += chosenActivitiesDuration[i] * 60000;
+        }
+        EndDateTimeMilliseconds += StartDateTimeMilliseconds;
+        var EndDateTime = moment(new Date(EndDateTimeMilliseconds)).format("DD/MM/YYYY HH:mm");
+        $("#EndDateTime").val(EndDateTime);
+    }
+
+</script>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.UserId)
+    @Html.HiddenFor(model => model.IsCancelled)
+    <div class="form-horizontal">
+        <h4>Create an Appointment</h4>
+        <hr />
+        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.StartDateTime, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="container">
+                    <div class="row">
+                        <div class='col-sm-6'>
+                            <div class="form-group">
+                                <div class='input-group date' id='datetimepicker1' style="width:310px;">
+                                    @Html.TextBoxFor(model => model.StartDateTime, new { @class = "form-control", name = "StartDateTime", id = "StartDateTime" })
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        @if (Model.Id == 0)
+                        {
+                            <script>
+                                $(function () {
+                                    $('#datetimepicker1').datetimepicker({
+                                        format: "DD/MM/YYYY HH:mm",
+                                        minDate: new Date()
+                                    });
+                                });
+                            </script>
+                        }
+                        else
+                        {
+                            <script>
+                                $(function () {
+                                    $('#datetimepicker1').datetimepicker({
+                                        format: "DD/MM/YYYY HH:mm",
+                                        minDate: "@Convert.ToDateTime(@Model.StartDateTime).ToString("MM'/'dd'/'yyyy HH':'mm")" //works with BG culture
+                                    });
+
+                                });
+                            </script>
+                        }
+                    </div>
+                </div>
+                @Html.ValidationMessageFor(model => model.StartDateTime, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.EndDateTime, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="container">
+                    <div class="row">
+                        <div class='col-sm-6'>
+                            <div class="form-group">
+                                <div class='input-group date' id='datetimepicker2' style="width:310px;">
+                                    @Html.TextBoxFor(model => model.EndDateTime, new { @class = "form-control", name = "EndDateTime", id = "EndDateTime", @readonly = "readonly" })
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <script type="text/javascript">
+                                $(function () {
+                                    $('#datetimepicker2').datetimepicker({
+                                        format: "DD/MM/YYYY HH:mm"
+                                    });
+                                });
+                        </script>
+                    </div>
+                </div>
+                @Html.ValidationMessageFor(model => model.EndDateTime, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        @foreach (Activity activity in Model.currentAppointmentActivities)
+        {
+            <div style="border:solid">
+                <input type="checkbox" name="chosenActivitiesIds" value="@activity.Id" checked />
+                <div class="form-group">
+                    @Html.LabelFor(model => activity.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.DisplayFor(model => activity.Name, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => activity.Price, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10" id="activity-price-@activity.Id">
+                        @Html.DisplayFor(model => activity.Price, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => activity.Duration, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10" id="activity-duration-@activity.Id">
+                        @Html.DisplayFor(model => activity.Duration, new { htmlAttributes = new { @class = "form-control" } }) Minutes
+                    </div>
+                </div>
+            </div>
+        }
+
+        @foreach (Activity activity in Model.Activities)
+        {
+            if (!Model.currentAppointmentActivities.Any(x => x.Id == activity.Id))
+            {
+                <div style="border:solid">
+                    <input type="checkbox" name="chosenActivitiesIds" value="@activity.Id" />
+                    <div class="form-group">
+                        @Html.LabelFor(model => activity.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.DisplayFor(model => activity.Name, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => activity.Price, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10" id="activity-price-@activity.Id">
+                            @Html.DisplayFor(model => activity.Price, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => activity.Duration, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10" id="activity-duration-@activity.Id">
+                            @Html.DisplayFor(model => activity.Duration, new { htmlAttributes = new { @class = "form-control" } }) Minutes
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        <div>
+            Total Price: <span id="TotalPrice"></span>
+        </div>
+        @if (Model.IsCancelled == false)
+                {
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Create" class="btn btn-default" />
+                </div>
+            </div>
+        }
+    </div>
+
+}
+
+<div>
+    @Html.ActionLink("Back", "GetAll")
+</div>

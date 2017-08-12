@@ -1,0 +1,81 @@
+﻿@model IEnumerable<RushHour.ViewModels.AppointmentViewModel>
+@using RushHour.Helpers
+@{
+    ViewBag.Title = "View all appointments";
+}
+
+<h2>View all appointments</h2>
+@Html.ActionLink("Create an Appointment", "Create", "Appointment")
+
+<script>
+    $(document).ready(function () {
+        $('.table').DataTable();
+    });
+
+    function HideShowFunction() {
+        $(".HideShow").toggle()
+    }
+</script>
+@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+<button onclick="HideShowFunction()">Hide/Show Cancelled Appointments</button>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.StartDateTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndDateTime)
+            </th>
+            @if (LoginUserSession.Current.IsAdmin)
+            {
+                <th>
+                    @Html.DisplayNameFor(model => model.UserId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.UserEmail)
+                </th>
+            }
+            <th>
+                Cancelled
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    @foreach (var item in Model)
+    {
+        <tr class=@(@item.IsCancelled ? "HideShow" : "")>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartDateTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndDateTime)
+            </td>
+            @if (LoginUserSession.Current.IsAdmin)
+                {
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserEmail)
+                </td>
+            }
+            <td>
+                @Html.DisplayFor(modelItem => item.IsCancelled)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @if (LoginUserSession.Current.IsAdmin)
+                {
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id }) @:|
+                }
+                @if (item.IsCancelled == false)
+                {
+                    @Html.ActionLink("Cancel", "Cancel", new { id = item.Id })
+                }
+
+            </td>
+        </tr>
+    }
+
+</table>
