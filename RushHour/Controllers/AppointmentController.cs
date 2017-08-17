@@ -56,10 +56,12 @@ namespace RushHour.Controllers
             if (appointmentService.PreValidate())
             {
                 Appointment appointmentInput = new Appointment();
+                bool isEdit = false;
                 if (createAppointmentViewModel.Id != 0)
                 {
                     appointmentInput.Id = createAppointmentViewModel.Id;
                     appointmentInput = appointmentService.GetAll(x => x.Id == createAppointmentViewModel.Id).FirstOrDefault();
+                    isEdit = true;
                 }
                 else
                 {
@@ -73,6 +75,10 @@ namespace RushHour.Controllers
                     chosenActivities.Add(activityService.GetAll(x => x.Id == activityId).FirstOrDefault());
                 }
                 appointmentInput.EndDateTime = appointmentService.CalculateEndDateTime(appointmentInput.StartDateTime, chosenActivities);
+                if (!appointmentService.TakenDateTimeCheck(appointmentInput.StartDateTime, appointmentInput.EndDateTime, isEdit, appointmentInput.UserId)) //if current time is taken
+                {
+                    return View(createAppointmentViewModel);
+                }
                 appointmentInput.Activities.Clear();
                 appointmentInput.Activities.AddRange(chosenActivities);
                 if (appointmentService.Save(appointmentInput))

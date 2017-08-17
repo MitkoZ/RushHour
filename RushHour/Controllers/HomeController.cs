@@ -7,7 +7,6 @@ using System.Web;
 using System.Web.Mvc;
 using DataAccess.Models;
 using RushHour.Helpers;
-using static RushHour.Helpers.CustomAuthorizeAttribute;
 using Services;
 
 namespace RushHour.Controllers

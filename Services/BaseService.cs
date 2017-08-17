@@ -16,7 +16,7 @@ namespace Services
         #region Constructors and fields
         protected IValidationDictionary validationDictionary;
         protected UnitOfWork unitOfWork;
-        private Repository repository;
+        protected Repository repository;
         public BaseService(IValidationDictionary validationDictionary, Repository repository, UnitOfWork unitOfWork)
         {
             this.validationDictionary = validationDictionary;

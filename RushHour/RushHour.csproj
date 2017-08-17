@@ -461,7 +461,6 @@
     <Compile Include="Helpers\CustomAuthorizeAttribute.cs" />
     <Compile Include="Helpers\CustomChosenActivitiesAttribute.cs" />
     <Compile Include="Helpers\CustomNumberAttribute.cs" />
-    <Compile Include="Helpers\LoginUserSession.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\AppointmentViewModel.cs" />
     <Compile Include="ViewModels\ChangePasswordViewModel.cs" />
