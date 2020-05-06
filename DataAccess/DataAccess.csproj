@@ -53,9 +53,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Migrations\201708031320544_InitialMigration.cs" />
-    <Compile Include="Migrations\201708031320544_InitialMigration.Designer.cs">
-      <DependentUpon>201708031320544_InitialMigration.cs</DependentUpon>
+    <Compile Include="Migrations\202005061342568_InitialMigration.cs" />
+    <Compile Include="Migrations\202005061342568_InitialMigration.Designer.cs">
+      <DependentUpon>202005061342568_InitialMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Activity.cs" />
@@ -70,8 +70,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201708031320544_InitialMigration.resx">
-      <DependentUpon>201708031320544_InitialMigration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202005061342568_InitialMigration.resx">
+      <DependentUpon>202005061342568_InitialMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
